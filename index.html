@@ -1,46 +1,30 @@
+```html
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grafik pH Sawit</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-    font-family:Arial;
-    background:#f4f4f4;
-    padding:20px;
+html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
 }
 
-.card{
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 2px 5px rgba(0,0,0,.2);
-}
-
-h1{
-    text-align:center;
+canvas{
+    width:100% !important;
+    height:100% !important;
 }
 </style>
 </head>
 
 <body>
 
-<h1>📊 Grafik pH Tanah</h1>
-
-<div class="card">
-    <h2>Nilai pH Saat Ini</h2>
-    <h1 id="nilaiPH">-</h1>
-</div>
-
-<br>
-
-<div class="card">
-    <canvas id="phChart"></canvas>
-</div>
+<canvas id="chart"></canvas>
 
 <script>
 
@@ -51,26 +35,28 @@ let labels = [];
 let values = [];
 
 const chart = new Chart(
-document.getElementById("phChart"),
+document.getElementById("chart"),
 {
-    type:'line',
+    type:"line",
     data:{
         labels:labels,
         datasets:[{
-            label:'pH Tanah',
+            label:"pH",
             data:values,
-            borderWidth:2
+            borderWidth:2,
+            tension:0.3
         }]
+    },
+    options:{
+        responsive:true,
+        maintainAspectRatio:false
     }
 });
 
-async function getData(){
+async function loadData(){
 
     const response = await fetch(firebaseURL);
     const data = await response.json();
-
-    document.getElementById("nilaiPH").innerHTML =
-    data.ph;
 
     labels.push(new Date().toLocaleTimeString());
     values.push(data.ph);
@@ -83,11 +69,12 @@ async function getData(){
     chart.update();
 }
 
-getData();
+loadData();
 
-setInterval(getData,5000);
+setInterval(loadData,5000);
 
 </script>
 
 </body>
 </html>
+```
