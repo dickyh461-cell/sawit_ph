@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grafik pH Sawit</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+    font-family:Arial;
+    background:#f4f4f4;
+    padding:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,.2);
+}
+
+h1{
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📊 Grafik pH Tanah</h1>
+
+<div class="card">
+    <h2>Nilai pH Saat Ini</h2>
+    <h1 id="nilaiPH">-</h1>
+</div>
+
+<br>
+
+<div class="card">
+    <canvas id="phChart"></canvas>
+</div>
+
+<script>
+
+const firebaseURL =
+"https://monitoring-sawit-8718b-default-rtdb.asia-southeast1.firebasedatabase.app/MonitoringSawit.json";
+
+let labels = [];
+let values = [];
+
+const chart = new Chart(
+document.getElementById("phChart"),
+{
+    type:'line',
+    data:{
+        labels:labels,
+        datasets:[{
+            label:'pH Tanah',
+            data:values,
+            borderWidth:2
+        }]
+    }
+});
+
+async function getData(){
+
+    const response = await fetch(firebaseURL);
+    const data = await response.json();
+
+    document.getElementById("nilaiPH").innerHTML =
+    data.ph;
+
+    labels.push(new Date().toLocaleTimeString());
+    values.push(data.ph);
+
+    if(labels.length > 20){
+        labels.shift();
+        values.shift();
+    }
+
+    chart.update();
+}
+
+getData();
+
+setInterval(getData,5000);
+
+</script>
+
+</body>
+</html>
